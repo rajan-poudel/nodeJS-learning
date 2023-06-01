@@ -1,27 +1,12 @@
 const express = require("express");
 const adminRoute = express.Router();
 const admin = require("../middlewares/admin");
-const Product = require("../models/product");
+const { postProduct, getProduct } = require("../controller/admin_controller");
 
 //create a admin middleware
-adminRoute.post("/admin/add-product",admin, async (req, res) => {
-  try {
-    const { name, description, image, quantiy, price, category } = res.body;
+adminRoute.post("/admin/add-product",admin,postProduct)
 
-    let product = new Product({
-      name,
-      description,
-      image,
-      quantiy,
-      price,
-      category,
-    });
-
-    product = await product.save();
-    res.json(product);
-  } catch (err) {
-    return res.status(500).json({ error: err.message });
-  }
-});
+// Get all your products
+adminRoute.get("/admin/get-products", admin,getProduct );
 
 module.exports = adminRoute;

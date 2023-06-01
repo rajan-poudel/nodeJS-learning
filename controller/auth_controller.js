@@ -1,12 +1,7 @@
-const express = require("express");
 const User = require("../models/user");
 const bcryptjs = require("bcryptjs");
 
 const jwt = require("jsonwebtoken");
-const { json } = require("express");
-const auth = require("../middlewares/auth");
-const { use } = require("../routes/auth");
-const authRouter = express.Router();
 
 const response = (req, res, user) => {
   const token = jwt.sign({ id: user._id }, "passwordKey");
@@ -40,7 +35,7 @@ const signUp = async (req, res, next) => {
     });
 
     user = await user.save();
-    await response(req, res, user);
+     response(req, res, user);
     // res.json(user);
   } catch (e) {
     res.status(500).json({

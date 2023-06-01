@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 const authRouter = require("./routes/auth.js");
 const adminRoute = require('./routes/admin.js');
 const database = require("./utils/db.js");
+const productRouter = require('./routes/product.js');
 
 //INIT
 const app = express()
@@ -17,6 +18,7 @@ const DB ="mongodb://127.0.0.1:27017/nodeLearning?retryWrites=true&w=majority"
 app.use(express.json());
 app.use(authRouter); 
 app.use(adminRoute);
+app.use(productRouter);
 
 mongoose.connect(DB).then( ()=>{
   console.log("Connection Successful");
