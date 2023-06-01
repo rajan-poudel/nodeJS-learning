@@ -38,4 +38,16 @@ const getProduct = async (req, res) => {
   }
 }
 
-module.exports = {postProduct,getProduct};
+// Delete the product
+const deleteProduct = async (req, res) => {
+  try {
+    const { id } = req.body;
+    let product = await Product.findByIdAndDelete(id);
+    response(req,res,product)
+
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+}
+
+module.exports = {postProduct,getProduct,deleteProduct};
