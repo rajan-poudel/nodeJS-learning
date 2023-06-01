@@ -5,6 +5,7 @@ const mongoose = require('mongoose')
 //Import from other file  
 const authRouter = require("./routes/auth.js");
 const adminRoute = require('./routes/admin.js');
+const database = require("./utils/db.js");
 
 //INIT
 const app = express()
