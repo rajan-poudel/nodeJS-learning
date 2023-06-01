@@ -8,7 +8,7 @@ const response = (req, res, data) => {
 
 const getProduct = async (req, res) => {
   try {
-   const product = await Product.find({ category: req.query.category });
+   const product = await Product.find({ });
     response(req, res, product);
     
   } catch (err) {
@@ -18,16 +18,15 @@ const getProduct = async (req, res) => {
 
 const getProductBySearch =  async (req, res) => {
     try {
+      
       const products = await Product.find({
-        name: { $regex: req.params.name, $options: "i" },
-      });
+      name: { $regex: req.params.name, $options: "i" },
+    });
   
-      response(req, res, product);
+      response(req, res, products);
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
   }
-
-
 
 module.exports ={getProduct,getProductBySearch};
