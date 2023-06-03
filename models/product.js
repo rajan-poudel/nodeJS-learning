@@ -28,7 +28,23 @@ const productSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-});
+  createdAt: {
+    type: Date,
+    required: false,
+    default: Date.now,
+  },
+  updatedAt: {
+    type: Date,
+    required: false,
+    default: Date.now,
+  },
+ 
+},{
+  timestamps: true,
+  _id: true,
+  
+}
+);
 
 const Product = mongoose.model("Product", productSchema);
 module.exports = Product;
