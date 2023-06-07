@@ -1,18 +1,20 @@
 //Import package from packages
 const express = require('express')
-const mongoose = require('mongoose')
+const dotenv = require('dotenv').config()
 
 //Import from other file  
 const authRouter = require("./routes/auth.js");
 const adminRoute = require('./routes/admin.js');
-const database = require("./utils/db.js");
 const productRouter = require('./routes/product.js');
+const connectionDatabase = require('./utils/db.js');
 
 //INIT
+
+//Database connection
+connectionDatabase();
 const app = express()
-const PORT = 3000;
-// const DB ="mongodb+srv://iamrjn:rajan500@cluster0.oebdyer.mongodb.net/?retryWrites=true&w=majority";
-const DB ="mongodb://127.0.0.1:27017/nodeLearning?retryWrites=true&w=majority"
+const PORT =process.env.PORT;
+
 
 //middleware
 app.use(express.json());
@@ -20,16 +22,7 @@ app.use(authRouter);
 app.use(adminRoute);
 app.use(productRouter);
 
-mongoose.connect(DB).then( ()=>{
-  console.log("Connection Successful");
-}).catch((e)=>{
-  console.log(e);
-});
 
-//office
-// app.listen(PORT,"192.168.101.22" ,()=>{ 
-//   console.log(`Connect at Port ${PORT} ` )
-// })
 //home
 app.listen(PORT ,()=>{ 
     console.log(`Connect at Port ${PORT} ` )
