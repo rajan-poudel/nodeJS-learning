@@ -4,8 +4,8 @@ const bcryptjs = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const response = (req, res, user) => {
-  const token = jwt.sign({ id: user._id }, "passwordKey");
-
+  const token = jwt.sign({ id: user._id }, "passwordKey" ,{ expiresIn: "1d" });
+  
   res.status(200).json({
     token: token,
     data: user,
