@@ -2,6 +2,7 @@ const express = require("express");
 const adminRoute = express.Router();
 const admin = require("../middlewares/admin");
 const { postProduct, getProduct, deleteProduct } = require("../controller/admin_controller");
+const addCommonMetadata = require("../middlewares/common");
 
 //create a admin middleware
 adminRoute.post("/admin/add-product",admin,postProduct)

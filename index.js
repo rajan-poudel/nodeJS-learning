@@ -7,6 +7,7 @@ const authRouter = require("./routes/auth.js");
 const adminRoute = require('./routes/admin.js');
 const productRouter = require('./routes/product.js');
 const connectionDatabase = require('./utils/db.js');
+const addCommonMetadata = require('./middlewares/common.js');
 
 //INIT
 
@@ -21,6 +22,7 @@ app.use(express.json());
 app.use(authRouter); 
 app.use(adminRoute);
 app.use(productRouter);
+// app.use(addCommonMetadata);
 
 
 //home

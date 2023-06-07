@@ -1,7 +1,10 @@
 const Product = require("../models/product");
+const meta = require("../middlewares/common");
+
 
 const response = (req, res, data) => {
   res.status(200).json({
+    meta:meta,
     data: data,
   });
 };

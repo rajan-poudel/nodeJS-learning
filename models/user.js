@@ -10,6 +10,7 @@
     email :{
         type:String,
         required:true,
+        unique:true,
         validate:{
             validator:(value) =>{ 
                 const re =
@@ -40,7 +41,11 @@
         default:"User",
     }
 
- });
+ },{
+    timestamps: true,
+    _id: true,
+    
+  });
 
  const User = mongoose.model("User", userSchema );
  module.exports =User; 

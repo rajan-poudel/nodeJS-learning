@@ -1,5 +1,6 @@
 const User = require("../models/user");
 const bcryptjs = require("bcryptjs");
+const meta = require("../middlewares/common");
 
 const jwt = require("jsonwebtoken");
 
@@ -7,6 +8,7 @@ const response = (req, res, user) => {
   const token = jwt.sign({ id: user._id }, "passwordKey" ,{ expiresIn: "1d" });
   
   res.status(200).json({
+    meta,
     token: token,
     data: user,
   });

@@ -1,4 +1,6 @@
 const mongoose = require("mongoose");
+const reviewSchema = require('./review.js')
+
 
 const productSchema = mongoose.Schema({
   name: {
@@ -28,20 +30,31 @@ const productSchema = mongoose.Schema({
     type: String,
     required: true,
   },
-  createdAt: {
-    type: Date,
-    required: false,
-    default: Date.now,
+  rating: {
+    type: Number,
+    required: true,
+    default:0,
   },
-  updatedAt: {
-    type: Date,
-    required: false,
-    default: Date.now,
+  review :[reviewSchema],
+  countInStock: {
+    type: Number,
+    required: true,
+    default:1,
   },
+  // createdAt: {
+  //   type: Date,
+  //   required: false,
+  //   default: Date.now,
+  // },
+  // updatedAt: {
+  //   type: Date,
+  //   required: false,
+  //   default: Date.now,
+  // },
  
 },{
   timestamps: true,
-  _id: true,
+
   
 }
 );
