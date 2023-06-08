@@ -1,6 +1,6 @@
 const meta = require("../middlewares/common");
+const { errorHandler, notFound } = require("../middlewares/error");
 const Product = require("../models/product");
-
 
 const response = (req, res, data) => {
   // Retrieve query parameters for pagination
@@ -18,7 +18,7 @@ const response = (req, res, data) => {
   const results = sortedData.slice(startIndex, endIndex);
 
   res.status(200).json({
-    meta:meta,
+    meta: meta,
     data: results,
     currentPage,
     limit: pageSize,
@@ -52,7 +52,7 @@ const postProduct = async (req, res) => {
     });
 
     product = await product.save();
-    res.status(200).json({meta, product });
+    res.status(200).json({ meta, product });
     // response(req, res, product);
   } catch (err) {
     return res.status(500).json({ error: err.message });
@@ -81,17 +81,42 @@ const getProduct = async (req, res) => {
   }
 };
 
-// Delete the product
-const deleteProduct = async (req, res) => {
+// Get SIngle  product
+const singleProductDetail = async (req, res) => {
   try {
-    const { id } = req.body;
-    let product = await Product.findByIdAndDelete(id);
-    res.status(200).json({meta, product });
-
-    // response(req, res, product);
+    const product = await Product.findById(req.params.id);  
+    const result = product.toObject();
+    delete result.__v;
+    res.status(200).json({ meta, result });
   } catch (e) {
     res.status(500).json({ error: e.message });
+    //  throw notFound(req,res)
   }
 };
 
-module.exports = { postProduct, getProduct, deleteProduct };
+// Delete the product
+const deleteProduct = async (req, res) => {
+  try { 
+    let product = await Product.findByIdAndDelete(req.params.id);
+    if(product){
+      res.status(200).json({ meta, product });
+    }else{
+      res.status(404).json({ 
+        statusCode:404,
+        error: "Already Deleted" });
+
+    }
+   
+
+    // response(req, res, product);
+  } catch (e) {
+     res.status(500).json({ error: e.message });
+  }
+};
+
+module.exports = {
+  postProduct,
+  getProduct,
+  deleteProduct,
+  singleProductDetail,
+};

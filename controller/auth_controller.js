@@ -5,7 +5,7 @@ const meta = require("../middlewares/common");
 const jwt = require("jsonwebtoken");
 
 const response = (req, res, user) => {
-  const token = jwt.sign({ id: user._id }, "passwordKey" ,{ expiresIn: "1d" });
+  const token = jwt.sign({ id: user._id },process.env.JWT_SECRET,{ expiresIn: "1d" });
   
   res.status(200).json({
     meta,
@@ -65,7 +65,7 @@ const signIn = async (req, res, next) => {
       return res.status(400).json({ msg: "Icorrect password!!! " });
     }
 
-    const token = jwt.sign({ id: user._id }, "passwordKey");
+    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
     await response(req, res, user);
     // res.json({token,rajan:[user]});
   } catch (e) {
@@ -83,7 +83,7 @@ const verifyToken = async (req, res, next) => {
     if (!token) {
       return res.status(500).json(false);
     }
-    const verified = jwt.verify(token, "passwordKey");
+    const verified = jwt.verify(token,process.env.JWT_SECRET);
     if (!verified) {
       return res.status(500).json(false);
     }
