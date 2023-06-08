@@ -105,7 +105,6 @@ const verifyToken = async (req, res, next) => {
 };
 
 //get user data
-
 const userData = async (req, res, next) => {
   try {
     const user = await User.findById(req.user);
@@ -120,18 +119,17 @@ const userData = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
   try {
+    const { name, email, address, type } = req.body;
+
     const user = await User.findById(req.user);
 
     if (user) {
-      user.name = req.body.name || user.name;
+      user.name = name || user.name;
 
-      user.email = req.body.email || user.email;
+      user.email = email || user.email;
 
-      if (req.body.password) {
-        user.password = req.body.password || user.password;
-      }
-      user.address = req.body.address || user.address;
-      user.type = req.body.type || user.type;
+      user.address = address || user.address;
+      user.type = type || user.type;
       const updateUser = await user.save();
       response(req, res, updateUser);
     }
