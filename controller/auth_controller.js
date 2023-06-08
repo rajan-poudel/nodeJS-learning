@@ -119,15 +119,17 @@ const userData = async (req, res, next) => {
 
 const updateProfile = async (req, res, next) => {
   try {
-    const { name, email, address, type } = req.body;
+    const { name,password, email, address, type } = req.body;
 
     const user = await User.findById(req.user);
+    const hasedPassword = await bcryptjs.hash(password, 8);
+
 
     if (user) {
       user.name = name || user.name;
 
       user.email = email || user.email;
-
+      user.password = hasedPassword || user.hasedPassword
       user.address = address || user.address;
       user.type = type || user.type;
       const updateUser = await user.save();

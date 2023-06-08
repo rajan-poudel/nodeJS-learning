@@ -9,6 +9,7 @@ const productRouter = require('./routes/product.js');
 const connectionDatabase = require('./utils/db.js');
 const addCommonMetadata = require('./middlewares/common.js');
 const { notFound, errorHandler } = require('./middlewares/error.js');
+const orderRouter = require('./routes/order.js');
 
 //INIT
 
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use(authRouter); 
 app.use(adminRoute);
 app.use(productRouter);
+app.use(orderRouter);
 // app.use(addCommonMetadata);
 
 //ERROR HANDLER
