@@ -10,7 +10,7 @@ const productSchema = mongoose.Schema({
   },
   description: {
     type: String,
-    required: true,
+    required:true,
     trim: true,
   },
   images: [
@@ -41,16 +41,7 @@ const productSchema = mongoose.Schema({
     required: true,
     default:1,
   },
-  // createdAt: {
-  //   type: Date,
-  //   required: false,
-  //   default: Date.now,
-  // },
-  // updatedAt: {
-  //   type: Date,
-  //   required: false,
-  //   default: Date.now,
-  // },
+  
  
 },{
   timestamps: true,

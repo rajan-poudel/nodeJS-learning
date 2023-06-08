@@ -20,7 +20,7 @@ const reviewSchema = mongoose.Schema(
     user: {
       type: mongoose.Schema.Types.ObjectId,
       required: true,
-      ref:"user"
+      ref:"User"
     },
   },
   
@@ -28,5 +28,3 @@ const reviewSchema = mongoose.Schema(
 
 module.exports= reviewSchema;
 
-// const Review = mongoose.model("Review", reviewSchema);
-// module.exports = Review;

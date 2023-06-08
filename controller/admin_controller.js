@@ -1,5 +1,5 @@
 const meta = require("../middlewares/common");
-const Product = require("../models/product");
+const { Product } = require("../models/product");
 
 const response = (req, res, data) => {
   // Retrieve query parameters for pagination
@@ -39,6 +39,8 @@ const postProduct = async (req, res) => {
       category,
       countInStock,
     } = req.body;
+
+    
 
     let product = new Product({
       name,

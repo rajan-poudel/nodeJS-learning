@@ -1,5 +1,5 @@
-const Product = require("../models/product");
 const meta = require("../middlewares/common");
+const { Product } = require("../models/product");
 
 
 const response = (req, res, data) => {
@@ -8,6 +8,8 @@ const response = (req, res, data) => {
     data: data,
   });
 };
+
+
 
 const getProduct = async (req, res) => {
   try {
