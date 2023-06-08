@@ -3,10 +3,13 @@ const bcryptjs = require("bcryptjs");
 const meta = require("../middlewares/common");
 
 const jwt = require("jsonwebtoken");
+const { use } = require("../routes/auth");
 
 const response = (req, res, user) => {
-  const token = jwt.sign({ id: user._id },process.env.JWT_SECRET,{ expiresIn: "1d" });
-  
+  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
+    expiresIn: "1d",
+  });
+
   res.status(200).json({
     meta,
     token: token,
@@ -19,7 +22,7 @@ const signUp = async (req, res, next) => {
   //post that data in database
   //return that data to user
   try {
-    const { name, email, password } = req.body;
+    const { name, email, password, address, type } = req.body;
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
@@ -34,10 +37,12 @@ const signUp = async (req, res, next) => {
       email,
       password: hasedPassword,
       name,
+      address,
+      type,
     });
 
     user = await user.save();
-     response(req, res, user);
+    response(req, res, user);
     // res.json(user);
   } catch (e) {
     res.status(500).json({
@@ -83,7 +88,7 @@ const verifyToken = async (req, res, next) => {
     if (!token) {
       return res.status(500).json(false);
     }
-    const verified = jwt.verify(token,process.env.JWT_SECRET);
+    const verified = jwt.verify(token, process.env.JWT_SECRET);
     if (!verified) {
       return res.status(500).json(false);
     }
@@ -102,11 +107,10 @@ const verifyToken = async (req, res, next) => {
 //get user data
 
 const userData = async (req, res, next) => {
-    const user =await User.findById(req.user);
-
   try {
-     response(req, res, user);
+    const user = await User.findById(req.user);
 
+    response(req, res, user);
   } catch (err) {
     res.status(500).json({
       error: err.message,
@@ -114,4 +118,28 @@ const userData = async (req, res, next) => {
   }
 };
 
-module.exports = { signIn, signUp, verifyToken,userData };
+const updateProfile = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user);
+
+    if (user) {
+      user.name = req.body.name || user.name;
+
+      user.email = req.body.email || user.email;
+
+      if (req.body.password) {
+        user.password = req.body.password || user.password;
+      }
+      user.address = req.body.address || user.address;
+      user.type = req.body.type || user.type;
+      const updateUser = await user.save();
+      response(req, res, updateUser);
+    }
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+    });
+  }
+};
+
+module.exports = { signIn, signUp, verifyToken, userData, updateProfile };
