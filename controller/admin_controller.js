@@ -1,5 +1,4 @@
 const meta = require("../middlewares/common");
-const { errorHandler, notFound } = require("../middlewares/error");
 const Product = require("../models/product");
 
 const response = (req, res, data) => {
