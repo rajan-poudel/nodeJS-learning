@@ -1,25 +1,38 @@
 const mongoose = require("mongoose");
-const { productSchema } = require("./product");
-// const Product = require("./product.js");
 
+const orderSchema = mongoose.Schema(
+  {
+    orderItems: [{ type: mongoose.Types.ObjectId, ref: "product" }],
+    shppingAddress: {
+      type: String,
+      required: true,
+      trim: true,
+    },
+    paymentMethod: {
+      type: String,
+      required: true,
+      trim: true,
+    },
 
-const orderSchema = mongoose.Schema({
-  orderItems: [productSchema],
-  shppingAddress: {
-    type: String,
-    required: true,
-    trim: true,
+    totalTax: {
+      type: Number,
+      required: true,
+    },
+
+    totalPrice: {
+      type: Number,
+      required: true,
+    },
+
+    shippingPrice: {
+      type: Number,
+      required: true,
+    },
   },
-  paymentMethod: {
-    type: String,
-    required: true,
-    trim: true,
-  },
-},{
-  timestamps: true,
-
-}
+  {
+    timestamps: true,
+  }
 );
 
-const Order = mongoose.model("Order", orderSchema);
+const Order = mongoose.model("order", orderSchema);
 module.exports = Order;

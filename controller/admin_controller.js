@@ -38,6 +38,7 @@ const postProduct = async (req, res) => {
       price,
       category,
       countInStock,
+      user
     } = req.body;
 
     
@@ -50,6 +51,7 @@ const postProduct = async (req, res) => {
       price,
       category,
       countInStock,
+      user
     });
 
     product = await product.save();

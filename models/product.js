@@ -41,14 +41,13 @@ const productSchema = mongoose.Schema({
     required: true,
     default:1,
   },
+ 
   
  
 },{
-  timestamps: true,
-
-  
+  timestamps: true, 
 }
 );
 
-const Product = mongoose.model("Product", productSchema);
+const Product = mongoose.model("product", productSchema);
 module.exports = {Product,productSchema};
