@@ -1,7 +1,9 @@
 const meta = require("../middlewares/common");
 const Order = require("../models/order_model");
+const asyncHandler = require('express-async-handler')
 
-const createOrder = async (req, res) => {
+
+const createOrder =asyncHandler( async (req, res) => {
   try {
     const {
       orderItems,
@@ -30,9 +32,9 @@ const createOrder = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: err.message, statusCode: 500 });
   }
-};
+});
 
-const getOrder = async (req, res) => {
+const getOrder =asyncHandler( async (req, res) => {
   try {
     const orders = await Order.find({}).populate({
       path: "orderItems",
@@ -47,9 +49,9 @@ const getOrder = async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
-};
+});
 
-const deleteOrder = async (req, res) => {
+const deleteOrder =asyncHandler( async (req, res) => {
   try {
     let order = await Order.findByIdAndDelete(req.params.id);
     if (order) {
@@ -61,6 +63,6 @@ const deleteOrder = async (req, res) => {
       });
     }
   } catch (err) {}
-};
+});
 
 module.exports = { createOrder, getOrder, deleteOrder };

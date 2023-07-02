@@ -1,6 +1,8 @@
 const User = require("../models/user");
 const bcryptjs = require("bcryptjs");
 const meta = require("../middlewares/common");
+const asyncHandler = require('express-async-handler')
+
 
 const jwt = require("jsonwebtoken");
 const { use } = require("../routes/auth");
@@ -17,7 +19,7 @@ const response = (req, res, user) => {
   });
 };
 
-const signUp = async (req, res, next) => {
+const signUp =asyncHandler( async (req, res, next) => {
   //get data from client
   //post that data in database
   //return that data to user
@@ -49,14 +51,14 @@ const signUp = async (req, res, next) => {
       error: e.message,
     });
   }
-};
+});
 
 //sign In
-const signIn = async (req, res, next) => {
+const signIn = asyncHandler(async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = (await User.findOne({ email })).toObject();
+    const user = (await User.findOne({ email }));
 
     if (!user) {
       return res
@@ -78,11 +80,11 @@ const signIn = async (req, res, next) => {
       error: e.message,
     });
   }
-};
+});
 
 //verfiy token
 
-const verifyToken = async (req, res, next) => {
+const verifyToken = asyncHandler(async (req, res, next) => {
   try {
     const token = req.header("x-auth-token");
     if (!token) {
@@ -102,10 +104,10 @@ const verifyToken = async (req, res, next) => {
       error: e.message,
     });
   }
-};
+});
 
 //get user data
-const userData = async (req, res, next) => {
+const userData =asyncHandler( async (req, res, next) => {
   try {
     const user = await User.findById(req.user);
 
@@ -115,9 +117,9 @@ const userData = async (req, res, next) => {
       error: err.message,
     });
   }
-};
+});
 
-const updateProfile = async (req, res, next) => {
+const updateProfile =asyncHandler( async (req, res, next) => {
   try {
     const { name,password, email, address, type } = req.body;
 
@@ -140,6 +142,6 @@ const updateProfile = async (req, res, next) => {
       error: err.message,
     });
   }
-};
+});
 
 module.exports = { signIn, signUp, verifyToken, userData, updateProfile };

@@ -1,5 +1,7 @@
 const meta = require("../middlewares/common");
 const { Product } = require("../models/product");
+const asyncHandler = require('express-async-handler')
+
 
 const response = (req, res, data) => {
   // Retrieve query parameters for pagination
@@ -28,7 +30,7 @@ const response = (req, res, data) => {
   });
 };
 
-const postProduct = async (req, res) => {
+const postProduct = asyncHandler(async (req, res) => {
   try {
     const {
       name,
@@ -60,9 +62,9 @@ const postProduct = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-};
+});
 
-const getProduct = async (req, res) => {
+const getProduct =asyncHandler( async (req, res) => {
   try {
     const products = await Product.find({});
     /// to remove [__v] key
@@ -82,10 +84,10 @@ const getProduct = async (req, res) => {
   } catch (e) {
     res.status(500).json({ error: e.message });
   }
-};
+});
 
 // Get SIngle  product
-const singleProductDetail = async (req, res) => {
+const singleProductDetail =asyncHandler( async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);  
     const result = product.toObject();
@@ -95,10 +97,10 @@ const singleProductDetail = async (req, res) => {
     res.status(500).json({ error: e.message });
     //  throw notFound(req,res)
   }
-};
+});
 
 // Delete the product
-const deleteProduct = async (req, res) => {
+const deleteProduct =asyncHandler( async (req, res) => {
   try { 
     let product = await Product.findByIdAndDelete(req.params.id);
     if(product){
@@ -115,7 +117,7 @@ const deleteProduct = async (req, res) => {
   } catch (e) {
      res.status(500).json({ error: e.message });
   }
-};
+});
 
 module.exports = {
   postProduct,

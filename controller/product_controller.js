@@ -1,5 +1,7 @@
 const meta = require("../middlewares/common");
 const { Product } = require("../models/product");
+const asyncHandler = require('express-async-handler')
+
 
 
 const response = (req, res, data) => {
@@ -11,7 +13,7 @@ const response = (req, res, data) => {
 
 
 
-const getProduct = async (req, res) => {
+const getProduct = asyncHandler(async (req, res) => {
   try {
    const product = await Product.find({ });
     response(req, res, product);
@@ -19,11 +21,10 @@ const getProduct = async (req, res) => {
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }
-};
+});
 
-const getProductBySearch =  async (req, res) => {
-    try {
-      
+const getProductBySearch =  asyncHandler(async (req, res) => {
+    try { 
       const products = await Product.find({
       name: { $regex: req.params.name, $options: "i" },
     });
@@ -32,7 +33,7 @@ const getProductBySearch =  async (req, res) => {
     } catch (e) {
       res.status(500).json({ error: e.message });
     }
-  }
+  });
   
 
 module.exports ={getProduct,getProductBySearch};
