@@ -1,25 +1,31 @@
 const User = require("../models/user");
 const bcryptjs = require("bcryptjs");
 const meta = require("../middlewares/common");
-const asyncHandler = require('express-async-handler')
-
+const asyncHandler = require("express-async-handler");
 
 const jwt = require("jsonwebtoken");
 const { use } = require("../routes/auth");
 
 const response = (req, res, user) => {
-  const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, {
-    expiresIn: "1d",
+  // Create tokens
+  const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+    expiresIn: "5m",
+  });
+  const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+    expiresIn: "30d",
   });
 
   res.status(200).json({
+    data: {
+      user,
+      access_token: accessToken,
+      refresh_token: refreshToken,
+    },
     meta,
-    token: token,
-    data: user,
   });
 };
 
-const signUp =asyncHandler( async (req, res, next) => {
+const signUp = asyncHandler(async (req, res, next) => {
   //get data from client
   //post that data in database
   //return that data to user
@@ -30,7 +36,11 @@ const signUp =asyncHandler( async (req, res, next) => {
     if (existingUser) {
       return res
         .status(400)
-        .json({ msg: "User with same email already exist!!! " });
+        .json({
+          message: "User with this email already exist!!! ",
+          status_code: 400,
+          error: true,
+        });
     }
 
     const hasedPassword = await bcryptjs.hash(password, 8);
@@ -58,26 +68,44 @@ const signIn = asyncHandler(async (req, res, next) => {
   try {
     const { email, password } = req.body;
 
-    const user = (await User.findOne({ email }));
+    const user = await User.findOne({ email });
 
     if (!user) {
       return res
         .status(400)
-        .json({ msg: "User with same email doesn't  exist!!! " });
+        .json({
+          message: "User with this email doesn't  exist!!! ",
+          status_code: 400,
+          error: true,
+        });
     }
 
     const isMatch = await bcryptjs.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(400).json({ msg: "Icorrect password!!! " });
+      return res
+        .status(401)
+        .json({
+          message: "Incorrect password!!! ",
+          status_code: 401,
+          error: true,
+        });
     }
 
-    const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
+    // Create tokens
+    const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "5m",
+    });
+    const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
     await response(req, res, user);
     // res.json({token,rajan:[user]});
   } catch (e) {
     res.status(500).json({
       error: e.message,
+      status_code: 500,
+      error: true,
     });
   }
 });
@@ -107,7 +135,7 @@ const verifyToken = asyncHandler(async (req, res, next) => {
 });
 
 //get user data
-const userData =asyncHandler( async (req, res, next) => {
+const userData = asyncHandler(async (req, res, next) => {
   try {
     const user = await User.findById(req.user);
 
@@ -119,19 +147,18 @@ const userData =asyncHandler( async (req, res, next) => {
   }
 });
 
-const updateProfile =asyncHandler( async (req, res, next) => {
+const updateProfile = asyncHandler(async (req, res, next) => {
   try {
-    const { name,password, email, address, type } = req.body;
+    const { name, password, email, address, type } = req.body;
 
     const user = await User.findById(req.user);
     const hasedPassword = await bcryptjs.hash(password, 8);
-
 
     if (user) {
       user.name = name || user.name;
 
       user.email = email || user.email;
-      user.password = hasedPassword || user.hasedPassword
+      user.password = hasedPassword || user.hasedPassword;
       user.address = address || user.address;
       user.type = type || user.type;
       const updateUser = await user.save();

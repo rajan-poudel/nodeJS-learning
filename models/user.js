@@ -39,7 +39,8 @@
     type:{
         type:String,
         default:"User",
-    }
+    },
+    
 
  },{
     timestamps: true,
