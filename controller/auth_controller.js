@@ -7,20 +7,8 @@ const jwt = require("jsonwebtoken");
 const { use } = require("../routes/auth");
 
 const response = (req, res, user) => {
-  // Create tokens
-  const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "5m",
-  });
-  const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
-    expiresIn: "30d",
-  });
-
   res.status(200).json({
-    data: {
-      user,
-      access_token: accessToken,
-      refresh_token: refreshToken,
-    },
+    data: user,
     meta,
   });
 };
@@ -34,13 +22,11 @@ const signUp = asyncHandler(async (req, res, next) => {
 
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res
-        .status(400)
-        .json({
-          message: "User with this email already exist!!! ",
-          status_code: 400,
-          error: true,
-        });
+      return res.status(400).json({
+        message: "User with this email already exist!!! ",
+        status_code: 400,
+        error: true,
+      });
     }
 
     const hasedPassword = await bcryptjs.hash(password, 8);
@@ -71,25 +57,21 @@ const signIn = asyncHandler(async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res
-        .status(400)
-        .json({
-          message: "User with this email doesn't  exist!!! ",
-          status_code: 400,
-          error: true,
-        });
+      return res.status(400).json({
+        message: "User with this email doesn't  exist!!! ",
+        status_code: 400,
+        error: true,
+      });
     }
 
     const isMatch = await bcryptjs.compare(password, user.password);
 
     if (!isMatch) {
-      return res
-        .status(401)
-        .json({
-          message: "Incorrect password!!! ",
-          status_code: 401,
-          error: true,
-        });
+      return res.status(401).json({
+        message: "Incorrect password!!! ",
+        status_code: 401,
+        error: true,
+      });
     }
 
     // Create tokens
@@ -99,14 +81,55 @@ const signIn = asyncHandler(async (req, res, next) => {
     const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
       expiresIn: "30d",
     });
+
+    // Update the user's access token in the database
+    user.token.access_token = accessToken;
+    user.token.refresh_token = refreshToken;
+
+    await user.save();
+
+    //response
     await response(req, res, user);
-    // res.json({token,rajan:[user]});
   } catch (e) {
     res.status(500).json({
-      error: e.message,
+      message: e.message,
       status_code: 500,
       error: true,
     });
+  }
+});
+
+//refresh-token
+const refreshToken = asyncHandler(async (req, res, next) => {
+  const { refresh_token: incomingRefreshToken } = req.body;
+
+  if (!incomingRefreshToken) {
+    return res.status(401).json({ message: "Refresh token is missing" });
+  }
+
+  try {
+    const decoded = jwt.verify(incomingRefreshToken, process.env.JWT_SECRET);
+    const user = await User.findById(decoded.userId);
+
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Generate new access token and refresh token
+    const accessToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "5m",
+    });
+    const refreshToken = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: "30d",
+    });
+
+    // Update the user's access token and refresh in the database
+    user.token.access_token = accessToken;
+    user.token.refresh_token = refreshToken;
+    await user.save();
+    await response(req, res, user.token);
+  } catch (error) {
+    res.status(500).json({ message: error, status_code: 500, error: true });
   }
 });
 
@@ -171,4 +194,11 @@ const updateProfile = asyncHandler(async (req, res, next) => {
   }
 });
 
-module.exports = { signIn, signUp, verifyToken, userData, updateProfile };
+module.exports = {
+  signIn,
+  signUp,
+  verifyToken,
+  refreshToken,
+  userData,
+  updateProfile,
+};
