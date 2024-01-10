@@ -27,11 +27,7 @@ const signUp = asyncHandler(async (req, res, next) => {
     }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return res.status(400).json({
-        message: "User with this email already exist!!! ",
-        status_code: 400,
-        error: true,
-      });
+      return handleNotFoundError(res,"User with this email already exist!!! " ,400)
     }
 
     const hasedPassword = await bcryptjs.hash(password, 8);
@@ -49,9 +45,8 @@ const signUp = asyncHandler(async (req, res, next) => {
     response(req, res, user);
     // res.json(user);
   } catch (e) {
-    res.status(500).json({
-      error: e.message,
-    });
+    handleInternalServerError(e, res);
+
   }
 });
 
@@ -64,21 +59,13 @@ const signIn = asyncHandler(async (req, res, next) => {
 
     if (!user) {
      return handleNotFoundError(res,"User with this email doesn't  exist!!! " ,400)
-      // return res.status(400).json({
-      //   message: "User with this email doesn't  exist!!! ",
-      //   status_code: 400,
-      //   error: true,
-      // });
+      
     }
 
     const isMatch = await bcryptjs.compare(password, user.password);
 
     if (!isMatch) {
-      return res.status(401).json({
-        message: "Incorrect password!!! ",
-        status_code: 401,
-        error: true,
-      });
+      return handleNotFoundError(res,"Incorrect password!!! " ,401)
     }
 
     // Create tokens
@@ -98,11 +85,7 @@ const signIn = asyncHandler(async (req, res, next) => {
     //response
     await response(req, res, user);
   } catch (e) {
-    res.status(500).json({
-      message: e.message,
-      status_code: 500,
-      error: true,
-    });
+    handleInternalServerError(e, res);
   }
 });
 
@@ -111,7 +94,7 @@ const refreshToken = asyncHandler(async (req, res, next) => {
   const { refresh_token: incomingRefreshToken } = req.body;
 
   if (!incomingRefreshToken) {
-    return res.status(401).json({ message: "Refresh token is missing" });
+    return handleNotFoundError(res,"Refresh token is missing" ,401)
   }
 
   try {
@@ -119,7 +102,8 @@ const refreshToken = asyncHandler(async (req, res, next) => {
     const user = await User.findById(decoded.userId);
 
     if (!user) {
-      return res.status(404).json({ message: "User not found" });
+      return handleNotFoundError(res,"User not found" ,404)
+
     }
 
     // Generate new access token and refresh token
@@ -136,7 +120,7 @@ const refreshToken = asyncHandler(async (req, res, next) => {
     await user.save();
     await response(req, res, user.token);
   } catch (error) {
-    res.status(500).json({ message: error, status_code: 500, error: true });
+    handleInternalServerError(error, res);
   }
 });
 
@@ -171,9 +155,7 @@ const userData = asyncHandler(async (req, res, next) => {
 
     response(req, res, user);
   } catch (err) {
-    res.status(500).json({
-      error: err.message,
-    });
+    handleInternalServerError(err, res);
   }
 });
 
@@ -195,9 +177,8 @@ const updateProfile = asyncHandler(async (req, res, next) => {
       response(req, res, updateUser);
     }
   } catch (err) {
-    res.status(500).json({
-      error: err.message,
-    });
+    handleInternalServerError(err, res);
+
   }
 });
 
