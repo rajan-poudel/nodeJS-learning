@@ -3,27 +3,41 @@ const User = require("../models/user");
 
 const admin = async (req, res, next) => {
   try {
-    const token = req.header("x-auth-token");
-    if (!token) {
+    const authHeader = req.headers["authorization"];
+
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
       return res.status(401).json({
-        msg: "No auth token,access denied!!",
+        message: "No auth token, access denied!!",
       });
     }
-    const verified = jwt.verify(token, "passwordKey");
-    if (!verified) {
+    const token = authHeader.split(" ")[1];
+    try {
+      const verified = jwt.verify(token, process.env.JWT_SECRET);
+      if (!verified) {
+        return res.status(401).json({
+          message: "Token authorization failed, access denied!!",
+          status_code: 401,
+        });
+      }
+      const user = await User.findById(verified.userId);
+      if (user.type == "User") {
+        return res
+          .status(401)
+          .json({
+            message: "you are not a admin",
+            status_code: 401,
+            error: true,
+          });
+      }
+      req.user = verified.id;
+      req.token = token;
+      next();
+    } catch (err) {
       return res.status(401).json({
-        msg: "Token Authorization failed, Authorization denied!!",
+        error: err,
+        message: "Token authorization failed, access denied!!",
       });
     }
-
-    const user = await User.findById(verified.id);
-    if (user.type == "user" || user.type == "seller") {
-      return res.status(401).json({ msg: "you are not a admin" });
-    }
-
-    req.user = verified.id;
-    req.token = token;
-    next();
   } catch (err) {
     res.status(500).json({
       error: err.message,
