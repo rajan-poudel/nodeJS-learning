@@ -2,6 +2,8 @@ const User = require("../models/user");
 const bcryptjs = require("bcryptjs");
 const meta = require("../middlewares/common");
 const asyncHandler = require("express-async-handler");
+const { handleInternalServerError, handleNotFoundError } = require('../exception/error_handler');
+
 
 const jwt = require("jsonwebtoken");
 const { use } = require("../routes/auth");
@@ -19,7 +21,10 @@ const signUp = asyncHandler(async (req, res, next) => {
   //return that data to user
   try {
     const { name, email, password, address, type } = req.body;
-
+    let image ="";
+    if (req.file) {
+      image = req.file.path;
+    }
     const existingUser = await User.findOne({ email });
     if (existingUser) {
       return res.status(400).json({
@@ -37,6 +42,7 @@ const signUp = asyncHandler(async (req, res, next) => {
       name,
       address,
       type,
+      image,
     });
 
     user = await user.save();
@@ -57,11 +63,12 @@ const signIn = asyncHandler(async (req, res, next) => {
     const user = await User.findOne({ email });
 
     if (!user) {
-      return res.status(400).json({
-        message: "User with this email doesn't  exist!!! ",
-        status_code: 400,
-        error: true,
-      });
+     return handleNotFoundError(res,"User with this email doesn't  exist!!! " ,400)
+      // return res.status(400).json({
+      //   message: "User with this email doesn't  exist!!! ",
+      //   status_code: 400,
+      //   error: true,
+      // });
     }
 
     const isMatch = await bcryptjs.compare(password, user.password);

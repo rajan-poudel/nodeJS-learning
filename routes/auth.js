@@ -1,12 +1,13 @@
 const express = require("express");
 const { json } = require("express");
 const auth = require("../middlewares/auth");
+const upload = require("../middlewares/image_upload.js");
 const { signUp, signIn, verifyToken, userData, updateProfile, refreshToken} = require("../controller/auth_controller");
 const authRouter = express.Router();
 
 
 //signUp
-authRouter.post("/api/signup", signUp)
+authRouter.post("/api/signup",upload.single('image'), signUp)
 //sign In  
 authRouter.post("/api/signIn",signIn)
 //verfiy token

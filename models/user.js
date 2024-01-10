@@ -40,6 +40,10 @@
         type:String,
         default:"User",
     },
+    image: {
+        type: String,
+        default: '', // Making profile image optional with default as an empty string
+      },
     token:{
         access_token:{
             type:String,
