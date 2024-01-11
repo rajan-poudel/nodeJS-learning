@@ -81,9 +81,12 @@ const signIn = asyncHandler(async (req, res, next) => {
     user.token.refresh_token = refreshToken;
 
     await user.save();
+    const result = user.toObject();
+    delete result.__v;
+    delete result._id;
 
     //response
-    await response(req, res, user);
+    await response(req, res, result);
   } catch (e) {
     handleInternalServerError(e, res);
   }
